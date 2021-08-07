@@ -19,20 +19,20 @@ namespace RinkLine.Authorization.Accounts
         public const string PasswordRegex = "(?=^.{8,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s)[0-9a-zA-Z!@#$%^&*()]*$";
 
         private readonly UserRegistrationManager _userRegistrationManager;
-        private readonly UserEmailer _userEmailer;
+        //private readonly IUserEmailer _userEmailer;
         private readonly IEmailSender _emailSender;
         private readonly ISmtpEmailSender _smtpEmailSender;
         public IAppUrlService AppUrlService { get; set; }
         public AccountAppService(
             UserRegistrationManager userRegistrationManager,
-            //UserEmailer userEmailer,
+            //IUserEmailer userEmailer,
             IEmailSender emailSender,
             ISmtpEmailSender smtpEmailSender
              )
         {
             _userRegistrationManager = userRegistrationManager;
             //_userEmailer = userEmailer;
-            emailSender = _emailSender;
+            _emailSender = emailSender;
             _smtpEmailSender = smtpEmailSender;
         }
 
@@ -92,11 +92,12 @@ namespace RinkLine.Authorization.Accounts
                 //AppUrlService.CreatePasswordResetUrlFormat(AbpSession.TenantId)
                 //);
 
+                var url = $"http://localhost:4200/account/reset-password?Id={user.Id}&Code={user.PasswordResetCode}";
                 _emailSender.Send(
                     from: "padhiyarmahavirsinh@gmail.com",
                     to: forgotPassword.EmailAddress,
                     subject: "You have a new task!",
-                    body: $"Click here: <b></b>",
+                    body: $"Click here: <b>{url}</b>",
                     isBodyHtml: true
                 );
 
@@ -133,6 +134,7 @@ namespace RinkLine.Authorization.Accounts
             //user.ShouldChangePasswordOnNextLogin = false;
 
             await UserManager.ChangePasswordAsync(user, resetPassword.NewPassword);            await UserManager.UpdateAsync(user);
+            
         }
     }
 }

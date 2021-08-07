@@ -12,6 +12,9 @@ using RinkLine.Localization;
 using RinkLine.MultiTenancy;
 using RinkLine.Timing;
 using Abp.Configuration.Startup;
+using Abp.Net.Mail;
+using Castle.MicroKernel.Registration;
+using Abp.Net.Mail.Smtp;
 
 namespace RinkLine
 {
@@ -40,6 +43,15 @@ namespace RinkLine
             
             Configuration.Localization.Languages.Add(new LanguageInfo("fa", "فارسی", "famfamfam-flags ir"));
             Configuration.ReplaceService<IMailKitSmtpBuilder, MyMailKitSmtpBuilder>();
+
+            Configuration.ReplaceService(typeof(IEmailSenderConfiguration), () =>
+            {
+                Configuration.IocManager.IocContainer.Register(
+                    Component.For<IEmailSenderConfiguration, ISmtpEmailSenderConfiguration>()
+                             .ImplementedBy<RinkLineSmtpEmailSenderConfiguration>()
+                             .LifestyleTransient()
+                );
+            });
         }
 
         public override void Initialize()

@@ -57,6 +57,15 @@ export class ResetPasswordComponent extends AppComponentBase implements OnInit {
         //         )
         //     );
         // }
+
+        this.model.userId = this._activatedRoute.snapshot.queryParams['Id'];
+        this.model.resetCode = this._activatedRoute.snapshot.queryParams['Code'];
+
+        // this.appSession.changeTenantIfNeeded(
+        //     this.parseTenantId(
+        //         this._activatedRoute.snapshot.queryParams['tenantId']
+        //     )
+        // );
     }
 
     // get useCaptcha(): boolean {
@@ -68,10 +77,10 @@ export class ResetPasswordComponent extends AppComponentBase implements OnInit {
         this._accountService.resetPassword(this.model)
             .pipe(finalize(() => { this.saving = false; }))
             .subscribe(() => {
-                
-                    this._router.navigate(['account/login']);
-                    return;
-              
+
+                this._router.navigate(['account/login']);
+                return;
+
 
                 // let recaptchaCallback = (token: string) => {
                 //     // Autheticate

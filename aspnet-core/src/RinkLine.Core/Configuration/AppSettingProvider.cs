@@ -10,14 +10,14 @@ namespace RinkLine.Configuration
             return new[]
             {
                 new SettingDefinition(AppSettingNames.UiTheme, "red", scopes: SettingScopes.Application | SettingScopes.Tenant | SettingScopes.User, isVisibleToClients: true),
-                new SettingDefinition("DefaultFromAddress","padhiyarmahavirsinh@gmail.com"),
-                new SettingDefinition("Smtp.Host:","127.0.0.1"),
-                new SettingDefinition("Smtp.Port","25"),
-                new SettingDefinition("Smtp.UserName","25"),
-                new SettingDefinition("Smtp.Password","25"),
-                new SettingDefinition("Smtp.Domain","25"),
-                new SettingDefinition("Smtp.EnableSsl","false"),
-                new SettingDefinition("Smtp.UseDefaultCredentials","true"),
+                new SettingDefinition("DefaultFromAddress","alpeshkalena123@gmail.com"),
+                new SettingDefinition("Smtp.Host:","smtp.gmail.com"),
+                new SettingDefinition("Smtp.Port","465"),
+                new SettingDefinition("Smtp.UserName","alpeshkalena123@gmail.com"),
+                new SettingDefinition("Smtp.Password","91578076"),
+                new SettingDefinition("Smtp.Domain","gmail.com"),
+                new SettingDefinition("Smtp.EnableSsl","true"),
+                new SettingDefinition("Smtp.UseDefaultCredentials","false"),
             };
         }
     }
