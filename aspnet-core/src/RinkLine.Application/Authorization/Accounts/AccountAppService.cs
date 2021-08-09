@@ -96,8 +96,8 @@ namespace RinkLine.Authorization.Accounts
                 _emailSender.Send(
                     from: "padhiyarmahavirsinh@gmail.com",
                     to: forgotPassword.EmailAddress,
-                    subject: "You have a new task!",
-                    body: $"Click here: <b>{url}</b>",
+                    subject: "Rinkline - Forgot Password!",
+                    body: $"Click here to reset your password: <b>{url}</b>",
                     isBodyHtml: true
                 );
 
@@ -131,6 +131,7 @@ namespace RinkLine.Authorization.Accounts
             var user = await UserManager.GetUserByIdAsync(resetPassword.UserId);            if (user == null || user.PasswordResetCode.IsNullOrEmpty() || user.PasswordResetCode != resetPassword.ResetCode)            {                throw new UserFriendlyException(L("InvalidPasswordResetCode"), L("InvalidPasswordResetCode_Detail"));            }
 
             user.PasswordResetCode = null;            user.IsEmailConfirmed = true;
+            user.LockoutEndDateUtc = null;
             //user.ShouldChangePasswordOnNextLogin = false;
 
             await UserManager.ChangePasswordAsync(user, resetPassword.NewPassword);            await UserManager.UpdateAsync(user);

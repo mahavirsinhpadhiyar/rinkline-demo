@@ -22,6 +22,7 @@ using RinkLine.Roles.Dto;
 using RinkLine.Users.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Abp.Net.Mail;
 
 namespace RinkLine.Users
 {
@@ -34,6 +35,7 @@ namespace RinkLine.Users
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
+        private readonly IEmailSender _emailSender;
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -42,7 +44,8 @@ namespace RinkLine.Users
             IRepository<Role> roleRepository,
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
-            LogInManager logInManager)
+            LogInManager logInManager,
+            IEmailSender emailSender)
             : base(repository)
         {
             _userManager = userManager;
@@ -51,6 +54,7 @@ namespace RinkLine.Users
             _passwordHasher = passwordHasher;
             _abpSession = abpSession;
             _logInManager = logInManager;
+            _emailSender = emailSender;
         }
 
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
@@ -60,7 +64,10 @@ namespace RinkLine.Users
             var user = ObjectMapper.Map<User>(input);
 
             user.TenantId = AbpSession.TenantId;
-            user.IsEmailConfirmed = true;
+            //As user must not able to login into the system before reset the password from the link user got so set emailconfirmed false.
+            user.IsEmailConfirmed = false;
+            DateTime date = new DateTime();
+            user.LockoutEndDateUtc = new DateTime(9999, date.Month, date.Day);
 
             await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
 
@@ -72,6 +79,19 @@ namespace RinkLine.Users
             }
 
             CurrentUnitOfWork.SaveChanges();
+
+            //As client's requirement we need to send an email to registered user and do not let user to login without reset password.
+            //starts here:
+            user.SetNewPasswordResetCode();
+            var url = $"http://localhost:4200/account/reset-password?Id={user.Id}&Code={user.PasswordResetCode}";
+            _emailSender.Send(
+                from: "alpeshkalena123@gmail.com",
+                to: input.EmailAddress,
+                subject: "Rinkline Registration!",
+                body: $"Please click here: <b>{url}</b>",
+                isBodyHtml: true
+            );
+            //ends here:
 
             return MapToEntityDto(user);
         }
